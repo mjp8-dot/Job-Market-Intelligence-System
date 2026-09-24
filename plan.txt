@@ -1,0 +1,30 @@
+                USER
+                 │
+                 ▼
+             manager.py
+                 │
+        ┌────────┴────────┐
+        ▼                 ▼
+     api.py            psql.py
+        │                 │
+        ▼                 │
+   Adzuna API              │
+        │                 │
+        ▼                 │
+   Raw JSON file           │
+        │                 │
+        └───────┐          │
+                ▼          │
+          Processing       │
+          / Validation     │
+                │          │
+                ▼          │
+          Clean job data ──┘
+                           ▼
+                      PostgreSQL
+                           │
+                           ▼
+                     SQL queries
+                           │
+                           ▼
+                       Results
