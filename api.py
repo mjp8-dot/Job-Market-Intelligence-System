@@ -3,44 +3,65 @@ import json
 
 class API:  # needs api_id, api_key, url to initialize object
 
-    def __init__(self, app_key, app_id, url):
-        self.app_id = app_id
-        self.app_key = app_key
-        self.url = url
+    def get_jobs(self, filename, url):
 
-    def get_jobs(self, limit, filename):
+        jobs = []
 
-        count = 0;
+        success = False
 
-        while(count < limit) :
+        while success == False:
 
             try:
 
-                response = requests.get(self.url)
+                response = requests.get(url)
 
-                job = {
-                    "id" : response["results"]["id"],
-                    "title" : response["results"]["title"],
-                    "description" : response["results"]["description"],
-                    "company" : response["results"]["company"]["display_name"],
-                    "location" : response["results"]["location"]["display_name"],
-                    "category" : response["results"]["category"]["label"],
-                    "contract_type" : response["results"]["contract_type"],
-                    "contract_time" : response["results"]["contract_time"],
-                    "salary_min" : response["results"]["salary_min"],
-                    "salary_max" : response["results"]["salary_max"],
-                    "posted_at" : response["results"]["created"],
-                    "redirect_url" : response["results"]["redirect_url"]
-                }
+                response = response.json()
 
-                with open(filename, "w") as f: 
-                    json.dumps(job, f, indent=4)
+                for result in response['results']:
 
-                count += 1
+                        job = {
+                            "id": result["id"],
+                            "title": result["title"],
+                            "company": result["company"]["display_name"],
+                            "category": result["category"]["label"],
+                            "location": result["location"]["display_name"],
+                            "description": result["description"],
+                            "contract_time": result.get("contract_time", None),
+                            "created": result["created"],
+                            "salary_min": result["salary_is_predicted"],
+                            "redirect_url": result["redirect_url"]
+                        }
+                        jobs.append(job)
+
+
+
+                with open(filename, "r") as f:
+                    existing_jobs = json.load(f)
+
+                if (existing_jobs != []):
+
+                    existing_jobs.extend(jobs)
+
+                    with open(filename, "w") as f:
+                        json.dump(existing_jobs, f, indent=4)
+
+                else:
+                    with open(filename, "w") as f:
+                        json.dump(jobs, f, indent=4)
+
+                success = True
+
+            
+            
 
             except FileNotFoundError as e:
+
+                print(f"File {filename} not found, creating {filename}: {e}")
+
                 with open(filename, "w") as f:
                     f.write("[]")  # create an empty list in the file if it doesn't exist
+
+
 
             
 
