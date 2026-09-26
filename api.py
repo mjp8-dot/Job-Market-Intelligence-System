@@ -31,28 +31,14 @@ class API:  # needs api_id, api_key, url to initialize object
                             "salary_min": result["salary_is_predicted"],
                             "redirect_url": result["redirect_url"]
                         }
+
                         jobs.append(job)
-
-
-
-                with open(filename, "r") as f:
-                    existing_jobs = json.load(f)
-
-                if (existing_jobs != []):
-
-                    existing_jobs.extend(jobs)
-
-                    with open(filename, "w") as f:
-                        json.dump(existing_jobs, f, indent=4)
-
-                else:
-                    with open(filename, "w") as f:
-                        json.dump(jobs, f, indent=4)
 
                 success = True
 
-            
-            
+                return jobs
+                
+                
 
             except FileNotFoundError as e:
 
